@@ -11,7 +11,7 @@ categories = ["utility", "components"]
 disciplines = ["mathematics", "computer-science", "education"]
 compiler = "0.14.0"
 exclude = [
-  "examples.typ",
+  "examples/",
   ".gitignore",
   ".git",
 ]

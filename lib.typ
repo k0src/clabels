@@ -35,7 +35,10 @@
 #let lbl(supplement, name) = context {
   let supp = _resolve-supplement(supplement)
   _get-counter(supp).step()
-  [#metadata((supplement: supp, _clabel: true)) #label(name)]
+
+  let figs-before = query(selector(figure).before(here())).filter(f => f.kind != "clabel-figure")
+  let fig-idx = figs-before.len()
+  [#metadata((supplement: supp, _clabel: true, _fig-idx: fig-idx)) #label(name)]
 }
 
 // Initialize
@@ -44,33 +47,23 @@
     if it.kind == "clabel-figure" { return it }
     
     context {
-      let fig-pos = here().position()
+      let fig-loc = here()
+
+      let figs-before = query(selector(figure).before(fig-loc)).filter(f => f.kind != "clabel-figure")
+      let my-idx = figs-before.len()
       
-      // Find all clabels after this figure
+      // Find clabel with matching figure index
       let clabels = query(metadata).filter(m => 
         type(m.value) == dictionary and m.value.at("_clabel", default: false)
       )
-      let clabels-after = clabels.filter(cl => _is-before(fig-pos, cl.location().position()))
       
-      if clabels-after.len() == 0 { return it }
+      let my-clabel = clabels.filter(cl => cl.value.at("_fig-idx", default: -1) == my-idx)
       
-      let target-clabel = clabels-after.first()
-      let cl-pos = target-clabel.location().position()
+      if my-clabel.len() == 0 { return it }
       
-      // Find the figure closest before this clabel
-      let figures = query(figure).filter(f => 
-        f.kind != "clabel-figure" and _is-before(f.location().position(), cl-pos)
-      )
-      
-      if figures.len() == 0 { return it }
-      
-      let owner-pos = figures.last().location().position()
-      
-      // Transform if this figure owns that clabel
-      if owner-pos.page != fig-pos.page or calc.abs(owner-pos.y - fig-pos.y) >= 1pt { return it }
-      
-      let supp = target-clabel.value.supplement
-      let num = _get-counter(supp).at(target-clabel.location()).first()
+      let cl = my-clabel.first()
+      let supp = cl.value.supplement
+      let num = _get-counter(supp).at(cl.location()).first()
       
       counter(figure.where(kind: image)).update(n => n - 1)
       figure(
