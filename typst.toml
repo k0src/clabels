@@ -1,0 +1,17 @@
+[package]
+name = "clabels"
+version = "0.1.0"
+entrypoint = "lib.typ"
+authors = ["@k0src"]
+license = "MIT"
+description = "Custom labeling system with auto-incrementing counters based on supplement names"
+repository = "https://github.com/k0src/typst-labels"
+keywords = ["labels", "references", "counters", "custom", "supplement"]
+categories = ["utility", "components"]
+disciplines = ["mathematics", "computer-science", "education"]
+compiler = "0.14.0"
+exclude = [
+  "examples.typ",
+  ".gitignore",
+  ".git",
+]
