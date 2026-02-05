@@ -1,11 +1,19 @@
 #let _clabels-ids = state("_clabels-ids", (:))
+#let _clabels-styles = state("_clabels-styles", (:))
 #let _get-counter(supplement) = counter("clabels-" + supplement)
 
-// Set supplement IDs
-#let set-lbl-ids(..mappings) = {
+// Set supplement IDs and optional styles
+#let set-lbls(..mappings) = {
   _clabels-ids.update(current => {
     let result = current
-    for pair in mappings.pos() { result.insert(pair.at(0), pair.at(1)) }
+    for item in mappings.pos() { result.insert(item.at(0), item.at(1)) }
+    result
+  })
+  _clabels-styles.update(current => {
+    let result = current
+    for item in mappings.pos() {
+      if item.len() >= 3 { result.insert(item.at(1), item.at(2)) }
+    }
     result
   })
 }
@@ -14,6 +22,12 @@
 #let _resolve-supplement(s) = {
   let ids = _clabels-ids.get()
   if s in ids { ids.at(s) } else { s }
+}
+
+// Get style for supplement
+#let _get-style(supplement) = {
+  let styles = _clabels-styles.get()
+  styles.at(supplement, default: none)
 }
 
 #let _is-before(a, b) = a.page < b.page or (a.page == b.page and a.y < b.y)
@@ -76,8 +90,16 @@
     let data = it.element.value
     if type(data) != dictionary or not data.at("_clabel", default: false) { return it }
     
-    let num = context _get-counter(data.supplement).at(it.element.location()).first()
-    link(it.target)[#data.supplement #num]
+    context {
+      let num = _get-counter(data.supplement).at(it.element.location()).first()
+      let style = _get-style(data.supplement)
+      
+      if style != none {
+        link(it.target)[#text(..style)[#data.supplement #num]]
+      } else {
+        link(it.target)[#data.supplement #num]
+      }
+    }
   }
   
   body
