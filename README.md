@@ -1,6 +1,6 @@
 **clabels** is a simple Typst package that allows you to give custom supplement labels to figures that auto-increment based on the supplement name.
 
-![clabels example](example.png)
+![clabels example](/examples/example.png)
 
 ### Import & Setup
 
