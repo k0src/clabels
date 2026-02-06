@@ -74,6 +74,7 @@
         placement: it.placement,
         gap: it.gap,
         kind: "clabel-figure",
+        outlined: false,
       )
     }
   }
