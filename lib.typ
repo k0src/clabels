@@ -2,7 +2,6 @@
 #let _clabels-styles = state("_clabels-styles", (:))
 #let _get-counter(supplement) = counter("clabels-" + supplement)
 
-// Set supplement IDs and optional styles
 #let set-lbls(..mappings) = {
   _clabels-ids.update(current => {
     let result = current
@@ -18,13 +17,11 @@
   })
 }
 
-// Resolve supplement
 #let _resolve-supplement(s) = {
   let ids = _clabels-ids.get()
   if s in ids { ids.at(s) } else { s }
 }
 
-// Get style for supplement
 #let _get-style(supplement) = {
   let styles = _clabels-styles.get()
   styles.at(supplement, default: none)
@@ -41,7 +38,6 @@
   [#metadata((supplement: supp, _clabel: true, _fig-idx: fig-idx)) #label(name)]
 }
 
-// Initialize
 #let clabels-init(body) = {
   show figure: it => {
     if it.kind == "clabel-figure" { return it }
@@ -52,7 +48,6 @@
       let figs-before = query(selector(figure).before(fig-loc)).filter(f => f.kind != "clabel-figure")
       let my-idx = figs-before.len()
       
-      // Find clabel with matching figure index
       let clabels = query(metadata).filter(m => 
         type(m.value) == dictionary and m.value.at("_clabel", default: false)
       )
